@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController(value = "newAPIOfWeb")
 @RequestMapping(value = "/lien-he")
 public class NewAPI {
+
     @Autowired
     private ICustomerService customerService;
 
     @PostMapping
     public ResponseEntity<CustomerDTO> addCustomer(@RequestBody CustomerDTO customerDTO){
-        CustomerDTO addOrUpdateCustomer = customerService.saveOrUpdate(customerDTO);
-        return ResponseEntity.ok(addOrUpdateCustomer);
+        CustomerDTO addCustomer = customerService.saveOrUpdate(customerDTO);
+        return ResponseEntity.ok(addCustomer);
     }
-	
+
 }

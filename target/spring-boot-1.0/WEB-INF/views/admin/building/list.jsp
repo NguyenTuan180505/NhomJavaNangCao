@@ -423,10 +423,11 @@
             dataType: "json",
             success: function (response) {
                 console.log("Success");
+                location.reload();
             },
             error: function (respond) {
                 console.log("failed");
-                console.log(respond);
+                location.reload();
             }
         });
     }

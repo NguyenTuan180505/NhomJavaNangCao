@@ -12,6 +12,8 @@ import com.javaweb.model.request.CustomerSearchRequest;
 import com.javaweb.model.response.ResponseDTO;
 import com.javaweb.model.response.StaffResponseDTO;
 import com.javaweb.repository.BuildingRepository;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import com.javaweb.repository.CustomerRepository;
 import com.javaweb.repository.TransactionRepository;
 import com.javaweb.repository.UserRepository;
@@ -40,6 +42,9 @@ public class CustomerService implements ICustomerService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private JavaMailSender emailSender;
 
     @Override
     public List<CustomerDTO> searchBuildings(CustomerSearchRequest request) {
@@ -103,22 +108,22 @@ public class CustomerService implements ICustomerService {
     @Override
     public CustomerDTO saveOrUpdate(CustomerDTO customerDTO) {
         CustomerEntity customerEntity;
-        if(customerDTO.getId() != null){
+        if (customerDTO.getId() != null) {
             Optional<CustomerEntity> optionalCustomer = customerRepository.findById(customerDTO.getId());
-            if(optionalCustomer.isPresent()){
+            if (optionalCustomer.isPresent()) {
                 customerEntity = optionalCustomer.get();
+            } else {
+                throw new RuntimeException("Customer not found with id: " + customerDTO.getId());
             }
-            else {
-                throw new RuntimeException("Customer not found with id: "+customerDTO.getId());
-            }
-        }
-        else {
+        } else {
             customerEntity = new CustomerEntity();
+            sendEmailNotification(customerDTO);
         }
-        modelMapper.map(customerDTO,customerEntity);
+        modelMapper.map(customerDTO, customerEntity);
         customerEntity = customerRepository.save(customerEntity);
-        return modelMapper.map(customerEntity,CustomerDTO.class);
+        return modelMapper.map(customerEntity, CustomerDTO.class);
     }
+
     @Transactional
     @Override
     public void deleteCustomers(List<Long> customerIds) {
@@ -154,5 +159,17 @@ public class CustomerService implements ICustomerService {
         transactionEntity.setCustomer(customer);
         transactionEntity = transactionRepository.save(transactionEntity);
         return modelMapper.map(transactionEntity, TransactionDTO.class);
+    }
+
+    private void sendEmailNotification(CustomerDTO customerDTO) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo("Huy210105@gmail.com");
+        message.setSubject("Thông báo: Người dùng đã liên hệ");
+        message.setText("Có người dùng vừa gửi thông tin liên hệ:\n" +
+                "Họ và tên: " + customerDTO.getName() + "\n" +
+                "Email: " + customerDTO.getEmail() + "\n" +
+                "Số điện thoại: " + customerDTO.getCustomerPhone() + "\n" +
+                "Nhu cầu: " + customerDTO.getDemand());
+        emailSender.send(message);
     }
 }

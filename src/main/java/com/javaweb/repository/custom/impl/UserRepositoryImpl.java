@@ -8,11 +8,15 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
 public class UserRepositoryImpl implements UserRepositoryCustom {
-	
+
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -26,25 +30,39 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 
 	@Override
 	public List<UserEntity> getAllUsers(Pageable pageable) {
+		// Sử dụng Criteria API để xây dựng truy vấn
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+		Root<UserEntity> root = criteriaQuery.from(UserEntity.class);
 
-		StringBuilder sql = new StringBuilder(buildQueryFilter())
-				.append(" LIMIT ").append(pageable.getPageSize()).append("\n")
-				.append(" OFFSET ").append(pageable.getOffset());
-		System.out.println("Final query: " + sql.toString());
+		// Lọc theo điều kiện status = 1
+		Predicate statusPredicate = criteriaBuilder.equal(root.get("status"), 1);
+		criteriaQuery.where(statusPredicate);
 
-		Query query = entityManager.createNativeQuery(sql.toString(), UserEntity.class);
+		// Phân trang với SQL Server - sử dụng setFirstResult và setMaxResults
+		javax.persistence.Query query = entityManager.createQuery(criteriaQuery);
+		query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+		query.setMaxResults(pageable.getPageSize());
+
 		return query.getResultList();
 	}
 
 	@Override
 	public int countTotalItem() {
-		String sql = buildQueryFilter();
-		Query query = entityManager.createNativeQuery(sql.toString());
-		return query.getResultList().size();
+		// Đếm tổng số bản ghi
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+		Root<UserEntity> root = criteriaQuery.from(UserEntity.class);
+
+		// Lọc theo điều kiện status = 1
+		Predicate statusPredicate = criteriaBuilder.equal(root.get("status"), 1);
+		criteriaQuery.where(statusPredicate);
+
+		// Câu truy vấn đếm tổng số bản ghi
+		criteriaQuery.select(criteriaBuilder.count(root));
+
+		javax.persistence.Query query = entityManager.createQuery(criteriaQuery);
+		return ((Long) query.getSingleResult()).intValue();
 	}
 
-	private String buildQueryFilter() {
-		String sql = "SELECT * FROM user u WHERE u.status = 1";
-		return sql;
-	}
 }

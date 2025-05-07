@@ -335,11 +335,11 @@
             dataType: "json",
             success: function (response) {
                 console.log("Success");
-                window.location.href = '<c:url value="/admin/customer-list?message=success" />';
+                location.reload();
             },
             error: function (respond) {
                 console.log("failed");
-                console.log(respond);
+                location.reload();
             }
         });
     }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,6 +67,11 @@ public class RoleRepositoryImpl implements RoleRepository {
 	}
 
 	@Override
+	public void deleteAllById(Iterable<? extends Long> iterable) {
+
+	}
+
+	@Override
 	public void deleteAll(Iterable<? extends RoleEntity> entities) {
 
 	}
@@ -106,7 +112,22 @@ public class RoleRepositoryImpl implements RoleRepository {
 	}
 
 	@Override
+	public <S extends RoleEntity> List<S> saveAllAndFlush(Iterable<S> iterable) {
+		return Collections.emptyList();
+	}
+
+	@Override
 	public void deleteInBatch(Iterable<RoleEntity> entities) {
+
+	}
+
+	@Override
+	public void deleteAllInBatch(Iterable<RoleEntity> iterable) {
+
+	}
+
+	@Override
+	public void deleteAllByIdInBatch(Iterable<Long> iterable) {
 
 	}
 
@@ -117,6 +138,11 @@ public class RoleRepositoryImpl implements RoleRepository {
 
 	@Override
 	public RoleEntity getOne(Long aLong) {
+		return null;
+	}
+
+	@Override
+	public RoleEntity getById(Long aLong) {
 		return null;
 	}
 

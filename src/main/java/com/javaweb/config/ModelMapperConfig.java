@@ -34,10 +34,6 @@ public class ModelMapperConfig {
                 map().setDemand(source.getDemand());                // ánh xạ demand sang demand
                 map().setStatus(source.getStatus());                // ánh xạ status sang status
                 map().setCompanyName(source.getCompanyName());
-
-                // Ánh xạ quản lý nhân viên (chỉ lấy nhân viên đầu tiên, nếu có)
-//                using(ctx -> ctx.getSource() != null && !ctx.getSource().isEmpty() ? ctx.getSource().get(0).getFullName() : "")
-//                        .map(source.getUsers(), destination.getManagementStaff());   // ánh xạ users sang managementStaff
             }
 
         });

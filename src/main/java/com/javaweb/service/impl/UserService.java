@@ -46,12 +46,14 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserDTO> getUsers(String searchValue, Pageable pageable) {
-        Page<UserEntity> users = null;
+        Page<UserEntity> users;
         if (StringUtils.isNotBlank(searchValue)) {
-            users = userRepository.findByUserNameContainingIgnoreCaseOrFullNameContainingIgnoreCaseAndStatusNot(searchValue, searchValue, 0, pageable);
+            users = userRepository.findByUserNameContainingIgnoreCaseOrFullNameContainingIgnoreCaseAndStatusNot(
+                    searchValue, searchValue, 0, pageable);
         } else {
             users = userRepository.findByStatusNot(0, pageable);
         }
+
         List<UserEntity> newsEntities = users.getContent();
         List<UserDTO> result = new ArrayList<>();
         for (UserEntity userEntity : newsEntities) {
@@ -59,8 +61,10 @@ public class UserService implements IUserService {
             userDTO.setRoleCode(userEntity.getRoles().get(0).getCode());
             result.add(userDTO);
         }
+
         return result;
     }
+
 
 
 

@@ -24,9 +24,8 @@ public class CustomerDTO extends AbstractDTO{
         this.demand = (entity.getDemand() != null) ? entity.getDemand() : "";
         this.status = (entity.getStatus() != null) ? entity.getStatus() : "";
         this.companyName = (entity.getCompanyName() != null) ? entity.getCompanyName() : "";
-        // Assuming `users` is not needed in the DTO, you can omit it or map accordingly if needed
         this.managementStaff = (entity.getUsers() != null && !entity.getUsers().isEmpty()) ?
-                entity.getUsers().get(0).getFullName() : ""; // Just an example, adapt as needed
+                entity.getUsers().get(0).getFullName() : "";
         this.setCreatedBy(entity.getCreatedBy());
         this.setCreatedDate(entity.getCreatedDate());
         this.setModifiedBy(entity.getModifiedBy());
